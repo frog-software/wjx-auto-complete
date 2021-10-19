@@ -36,6 +36,10 @@
       content: "软件工程"
     },
     {
+      key: "班级",
+      content: "333"
+    },
+    {
       key: "手机号",
       content: "13333333333"
     }
@@ -46,7 +50,7 @@
       const title = question.getElementsByClassName("div_title_question")?.[0]?.innerText;
       const textarea = question.getElementsByTagName("textarea")?.[0];
       const select = question.getElementsByTagName("select")?.[0];
-      const ul = question.getElementsByTagName("ul")?.[0];
+      const ulradiocheck = question.getElementsByClassName("ulradiocheck")?.[0];
 
       const correspondingInfo = personalInfo.find(i => (
         exactMatch ? title === i.key : title.includes(i.key)
@@ -56,8 +60,18 @@
         textarea.innerText = correspondingInfo.content
       } else if (correspondingInfo && select){
         // selection
-      } else if (correspondingInfo && ul) {
+      } else if (correspondingInfo && ulradiocheck) {
         // radio
+        Array.from(ulradiocheck.getElementsByTagName("li")).forEach((list) => {
+          const input = list.getElementsByTagName("input")[0]
+          const label = list.getElementsByTagName("label")[0]
+          const anchor = list.getElementsByTagName("a")[0]
+
+          if (exactMatch ? label.innerText === correspondingInfo.content : label.innerText.includes(correspondingInfo.content)) {
+            input.checked = true
+            anchor.className += " jqChecked"
+          }
+        })
       } else {
         question.style.background = "#F9FCBA"
       }
