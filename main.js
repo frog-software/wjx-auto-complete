@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        问卷星自动填写信息
-// @version     0.2
+// @version     1.0
 // @description 问卷星自动填写个人信息并提交
 // @author      Charlie Chiang
 // @include     https://www.wjx.top/*/*.aspx
