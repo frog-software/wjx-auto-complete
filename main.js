@@ -52,6 +52,8 @@
 
       if (correspondingInfo) {
         textarea.innerText = correspondingInfo.content
+      } else {
+        question.style.background = "yellow"
       }
     })
   }
