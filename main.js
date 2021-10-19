@@ -45,6 +45,7 @@
     Array.from(document.getElementsByClassName("div_question")).forEach((question) => {
       const title = question.getElementsByClassName("div_title_question")?.[0]?.innerText;
       const textarea = question.getElementsByTagName("textarea")?.[0];
+      const select = question.getElementsByTagName("select")?.[0];
       const ul = question.getElementsByTagName("ul")?.[0];
 
       const correspondingInfo = personalInfo.find(i => (
