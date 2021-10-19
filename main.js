@@ -15,7 +15,8 @@
   // 提交时间，默认2000毫秒，即2秒
   const time = 2000;
   // 信息名称匹配模式，默认模糊匹配
-  const exactMatch = false;
+  const exactMatchForTitle = false;
+  const exactMatchForAnswer = false;
 
   // 个人信息
   const personalInfo = [
@@ -57,23 +58,28 @@
       const ulradiocheck = question.getElementsByClassName("ulradiocheck")?.[0];
 
       const correspondingInfo = personalInfo.find(i => (
-        exactMatch ? title === i.key : title.includes(i.key)
+        exactMatchForTitle ? title === i.key : title.includes(i.key)
       ))
+
+      let hasFilled = false
 
       if (correspondingInfo && textarea) {
         textarea.innerText = correspondingInfo.content
+        hasFilled = true
       } else if (correspondingInfo && select) {
         // selection
         const select = question.getElementsByTagName("select")?.[0]
         Array.from(select.getElementsByTagName("option")).forEach((option) => {
-          if (exactMatch
+          if (exactMatchForAnswer
             ? option.innerText === correspondingInfo.content
             : option.innerText.includes(correspondingInfo.content)) {
             select.value = option.value
             const textbox = Array.from(question.getElementsByTagName("span")).filter((spn) => (
               spn.getAttribute("role") === "textbox"
             ))?.[0]
+
             textbox.innerText = option.innerText
+            hasFilled = true
           }
         })
       } else if (correspondingInfo && ulradiocheck) {
@@ -83,15 +89,18 @@
           const label = list.getElementsByTagName("label")[0]
           const anchor = list.getElementsByTagName("a")[0]
 
-          if (exactMatch
+          if (exactMatchForAnswer
             ? label.innerText === correspondingInfo.content
             : label.innerText.includes(correspondingInfo.content)) {
             input.checked = true
             // 显示已勾选
             anchor.className += " jqChecked"
+            hasFilled = true
           }
         })
-      } else {
+      }
+
+      if (!hasFilled) {
         question.style.background = "#F9FCBA"
       }
     })
