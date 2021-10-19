@@ -42,6 +42,10 @@
     {
       key: "手机号",
       content: "13333333333"
+    },
+    {
+      key: "性别",
+      content: "男"
     }
   ]
 
@@ -60,6 +64,18 @@
         textarea.innerText = correspondingInfo.content
       } else if (correspondingInfo && select){
         // selection
+        const select = question.getElementsByTagName("select")?.[0]
+        Array.from(select.getElementsByTagName("option")).forEach((option) => {
+          if (exactMatch 
+            ? option.innerText === correspondingInfo.content 
+            : option.innerText.includes(correspondingInfo.content)) {
+            select.value = option.value
+            const textbox = Array.from(question.getElementsByTagName("span")).filter((spn) => {
+              return spn.getAttribute("role") === "textbox"
+            })?.[0]
+            textbox.innerText = option.innerText
+          }
+        })
       } else if (correspondingInfo && ulradiocheck) {
         // radio
         Array.from(ulradiocheck.getElementsByTagName("li")).forEach((list) => {
@@ -67,8 +83,11 @@
           const label = list.getElementsByTagName("label")[0]
           const anchor = list.getElementsByTagName("a")[0]
 
-          if (exactMatch ? label.innerText === correspondingInfo.content : label.innerText.includes(correspondingInfo.content)) {
+          if (exactMatch 
+            ? label.innerText === correspondingInfo.content 
+            : label.innerText.includes(correspondingInfo.content)) {
             input.checked = true
+            // 显示已勾选
             anchor.className += " jqChecked"
           }
         })
