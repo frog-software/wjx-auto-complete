@@ -14,11 +14,12 @@
   const autoPost = false;
   // 提交时间，默认2000毫秒，即2秒
   const time = 2000;
-  // 信息名称匹配模式，默认模糊匹配
+  // 题目匹配模式，默认模糊匹配
   const exactMatchForTitle = false;
+  // 答案匹配模式（单选或下拉选择），默认模糊匹配
   const exactMatchForAnswer = false;
 
-  // 个人信息
+  // 个人信息，可以按照格式随意增加或减少
   const personalInfo = [
     {
       key: "学院",
@@ -67,7 +68,6 @@
         textarea.innerText = correspondingInfo.content
         hasFilled = true
       } else if (correspondingInfo && select) {
-        // selection
         const select = question.getElementsByTagName("select")?.[0]
         Array.from(select.getElementsByTagName("option")).forEach((option) => {
           if (exactMatchForAnswer
@@ -83,7 +83,6 @@
           }
         })
       } else if (correspondingInfo && ulradiocheck) {
-        // radio
         Array.from(ulradiocheck.getElementsByTagName("li")).forEach((list) => {
           const input = list.getElementsByTagName("input")[0]
           const label = list.getElementsByTagName("label")[0]
@@ -93,7 +92,6 @@
             ? label.innerText === correspondingInfo.content
             : label.innerText.includes(correspondingInfo.content)) {
             input.checked = true
-            // 显示已勾选
             anchor.className += " jqChecked"
             hasFilled = true
           }
