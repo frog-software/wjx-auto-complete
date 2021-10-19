@@ -43,17 +43,22 @@
 
   const fillInfo = () => {
     Array.from(document.getElementsByClassName("div_question")).forEach((question) => {
-      const title = question.getElementsByClassName("div_title_question")[0].innerText;
-      const textarea = question.getElementsByTagName("textarea")[0];
+      const title = question.getElementsByClassName("div_title_question")?.[0]?.innerText;
+      const textarea = question.getElementsByTagName("textarea")?.[0];
+      const ul = question.getElementsByTagName("ul")?.[0];
 
       const correspondingInfo = personalInfo.find(i => (
         exactMatch ? title === i.key : title.includes(i.key)
       ))
 
-      if (correspondingInfo) {
+      if (correspondingInfo && textarea) {
         textarea.innerText = correspondingInfo.content
+      } else if (correspondingInfo && select){
+        // selection
+      } else if (correspondingInfo && ul) {
+        // radio
       } else {
-        question.style.background = "yellow"
+        question.style.background = "#F9FCBA"
       }
     })
   }
