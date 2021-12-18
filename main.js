@@ -26,7 +26,7 @@
   const keywordSplitter = ","
 
   // 个人信息，可以按照格式随意增加或减少
-  // 开启模糊匹配时，key 中可以使用英文逗号分隔多个关键词
+  // 开启模糊匹配时，key 中可以使用 keywordSplitter 分隔多个关键词
   const personalInfo = [
     {
       key: "学院",
