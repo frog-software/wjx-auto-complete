@@ -10,16 +10,21 @@
 
 (() => {
   'use strict';
-  // 是否自动提交，true为自动提交，false为手动提交
+  // 是否自动提交，true 为自动提交，false 为手动提交
   const autoPost = false;
   // 提交时间，默认2000毫秒，即2秒
   const time = 2000;
-  // 题目匹配模式，默认模糊匹配
+  // 题目匹配模式，默认模糊匹配（包含 key 即可），否则完全匹配
   const exactMatchForTitle = false;
-  // 答案匹配模式（单选或下拉选择），默认模糊匹配
+  // 答案匹配模式（单选或下拉选择），默认模糊匹配（包含 content 即可），否则完全匹配
   const exactMatchForAnswer = false;
+  // 匹配多个关键词时的完全匹配模式，
+  // 打开时每个题目标题必须匹配全部关键词
+  // 关闭时每个题目标题必须匹配其中一个关键词即可
+  const multiKeywordFullMatch = true;
 
   // 个人信息，可以按照格式随意增加或减少
+  // 开启模糊匹配时，key 中可以使用英文逗号分隔多个关键词
   const personalInfo = [
     {
       key: "学院",
@@ -51,57 +56,56 @@
     }
   ]
 
-  const fillInfo = () => {
-    Array.from(document.getElementsByClassName("div_question")).forEach((question) => {
-      const title = question.getElementsByClassName("div_title_question")?.[0]?.innerText;
-      const textarea = question.getElementsByTagName("textarea")?.[0];
-      const select = question.getElementsByTagName("select")?.[0];
-      const ulradiocheck = question.getElementsByClassName("ulradiocheck")?.[0];
+  const fillInfo = (title, textarea, select, ulradiocheck, question) => {
+    const correspondingInfo = personalInfo.find(i => (
+      exactMatchForTitle ? (
+        title === i.key
+      ) : (
+        i.key.split(",").reduce((acc, cur) => (acc + title.includes(cur)), 0) >=
+          (multiKeywordFullMatch ? i.key.split(",").length : 1)
+      )
+    ))
 
-      const correspondingInfo = personalInfo.find(i => (
-        exactMatchForTitle ? title === i.key : title.includes(i.key)
-      ))
+    let hasFilled = false
 
-      let hasFilled = false
+    if (correspondingInfo && textarea) {
+      textarea.innerText = correspondingInfo.content
+      textarea.value = correspondingInfo.content
+      hasFilled = true
+    } else if (correspondingInfo && select) {
+      const select = question.getElementsByTagName("select")?.[0]
+      Array.from(select.getElementsByTagName("option")).forEach((option) => {
+        if (exactMatchForAnswer
+          ? option.innerText === correspondingInfo.content
+          : option.innerText.includes(correspondingInfo.content)) {
+          select.value = option.value
+          const textbox = Array.from(question.getElementsByTagName("span")).filter((spn) => (
+            spn.getAttribute("role") === "textbox"
+          ))?.[0]
 
-      if (correspondingInfo && textarea) {
-        textarea.innerText = correspondingInfo.content
-        hasFilled = true
-      } else if (correspondingInfo && select) {
-        const select = question.getElementsByTagName("select")?.[0]
-        Array.from(select.getElementsByTagName("option")).forEach((option) => {
-          if (exactMatchForAnswer
-            ? option.innerText === correspondingInfo.content
-            : option.innerText.includes(correspondingInfo.content)) {
-            select.value = option.value
-            const textbox = Array.from(question.getElementsByTagName("span")).filter((spn) => (
-              spn.getAttribute("role") === "textbox"
-            ))?.[0]
+          textbox.innerText = option.innerText
+          hasFilled = true
+        }
+      })
+    } else if (correspondingInfo && ulradiocheck) {
+      Array.from(ulradiocheck.getElementsByTagName("li")).forEach((list) => {
+        const input = list.getElementsByTagName("input")[0]
+        const label = list.getElementsByTagName("label")[0]
+        const anchor = list.getElementsByTagName("a")[0]
 
-            textbox.innerText = option.innerText
-            hasFilled = true
-          }
-        })
-      } else if (correspondingInfo && ulradiocheck) {
-        Array.from(ulradiocheck.getElementsByTagName("li")).forEach((list) => {
-          const input = list.getElementsByTagName("input")[0]
-          const label = list.getElementsByTagName("label")[0]
-          const anchor = list.getElementsByTagName("a")[0]
+        if (exactMatchForAnswer
+          ? label.innerText === correspondingInfo.content
+          : label.innerText.includes(correspondingInfo.content)) {
+          input.checked = true
+          anchor.className += " jqChecked"
+          hasFilled = true
+        }
+      })
+    }
 
-          if (exactMatchForAnswer
-            ? label.innerText === correspondingInfo.content
-            : label.innerText.includes(correspondingInfo.content)) {
-            input.checked = true
-            anchor.className += " jqChecked"
-            hasFilled = true
-          }
-        })
-      }
-
-      if (!hasFilled) {
-        question.style.background = "#F9FCBA"
-      }
-    })
+    if (!hasFilled) {
+      question.style.background = "#F9FCBA"
+    }
   }
 
   const scrollDown = () => {
@@ -121,7 +125,22 @@
     } else { console.warn("自动提交已关闭，请手动开启") }
   }
 
+  Array.from(document.getElementsByClassName("div_question")).forEach((question) => {
+    const title = question.getElementsByClassName("div_title_question")?.[0]?.innerText;
+    const textarea = question.getElementsByTagName("textarea")?.[0];
+    const select = question.getElementsByTagName("select")?.[0];
+    const ulradiocheck = question.getElementsByClassName("ulradiocheck")?.[0];
 
-  fillInfo();
+    fillInfo(title, textarea, select, ulradiocheck, question);
+  })
+
+  Array.from(document.getElementsByClassName("field")).forEach((question) => {
+    const title = question.getElementsByClassName("field-label")?.[0]?.innerText;
+    const textarea = question.getElementsByTagName("input")?.[0];
+    const select = question.getElementsByTagName("select")?.[0];
+    const ulradiocheck = question.getElementsByClassName("ulradiocheck")?.[0];
+
+    fillInfo(title, textarea, select, ulradiocheck, question);
+  })
   scrollDown();
 })();
