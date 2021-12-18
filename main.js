@@ -22,6 +22,8 @@
   // 打开时每个题目标题必须匹配全部关键词
   // 关闭时每个题目标题必须匹配其中一个关键词即可
   const multiKeywordFullMatch = true;
+  // 多关键词分隔符
+  const keywordSplitter = ","
 
   // 个人信息，可以按照格式随意增加或减少
   // 开启模糊匹配时，key 中可以使用英文逗号分隔多个关键词
@@ -54,15 +56,15 @@
       key: "性别",
       content: "男"
     }
-  ]
+  ].map(i => ({ ...i, key: i.key.split(keywordSplitter) }))
 
   const fillInfo = (title, textarea, select, ulradiocheck, question) => {
     const correspondingInfo = personalInfo.find(i => (
       exactMatchForTitle ? (
-        title === i.key
+        title === i.key.join(keywordSplitter)
       ) : (
-        i.key.split(",").reduce((acc, cur) => (acc + title.includes(cur)), 0) >=
-          (multiKeywordFullMatch ? i.key.split(",").length : 1)
+        i.key.reduce((acc, cur) => (acc + title.includes(cur)), 0) >=
+        (multiKeywordFullMatch ? i.key.length : 1)
       )
     ))
 
